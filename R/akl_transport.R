@@ -1,4 +1,12 @@
-library("httr")
+#' Get Auckland bus agency
+#'
+#' @description Query Auckland bus agency
+#'
+#' @param api_key A string that contains your API key.
+#'
+#' @return A tibble
+#' @export
+#'
 get_akl_agency <- function(api_key=NULL){
   if (is.null(api_key)){
     stop()
@@ -9,9 +17,5 @@ get_akl_agency <- function(api_key=NULL){
                        add_headers("Ocp-Apim-Subscription-Key" = api_key))
   cnt <- content(my_raw_result, as = "text")
   res <- jsonlite::fromJSON(cnt)$response
-  class(res)
   tibble::as_tibble(res)
 }
-  
-
-get_akl_agency(api_key = "")
