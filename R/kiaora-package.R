@@ -1,4 +1,4 @@
 #' kiaora
 #'
-#' @import httr
+#' @import httr rlang
 "_PACKAGE"

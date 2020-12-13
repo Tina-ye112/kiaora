@@ -1,5 +1,6 @@
 # use diff path to get data
-get_akl <- function(api_key = NULL, path = NULL, query = list()) {
+get_akl <- function(path = NULL, query = list()) {
+  api_key <- Sys.getenv("AKL_TRANS_API")
   stop_if_no_key(api_key)
   base_url <- "https://api.at.govt.nz/"
   connection <- GET(base_url,
@@ -13,8 +14,8 @@ get_akl <- function(api_key = NULL, path = NULL, query = list()) {
 }
 
 # real time
-get_real_time <- function(api_key = NULL, path = NULL) {
-  res <- get_akl(api_key, path)
+get_real_time <- function(path = NULL) {
+  res <- get_akl(path)
   tibble::as_tibble(res$entity)
 }
 
@@ -27,6 +28,7 @@ get_real_time <- function(api_key = NULL, path = NULL) {
 #' @return A tibble
 #' @export
 get_akl_agency <- function(api_key = NULL) {
+  # TODO: remove api_key
   # TODO: convert list from get_akl() to tibble
   get_akl(api_key = api_key, path = "v2/gtfs/agency")
 }
@@ -52,8 +54,7 @@ get_akl_trips <- function(api_key = NULL) {
 }
 
 #BTF Timetable by short_name,route_ids and stop_code???
-get_timetable_by_route_ids_stop_code_and_short_name <- function(api_key = NULL,
-                                                                route_ids = NULL,
+get_timetable_by_route_ids_stop_code_and_short_name <- function(route_ids = NULL,
                                                                 stop_code =NULL,
                                                                 route_short_name =NULL) {
   if (all(is.null(route_ids), is.null(stop_code), is.null(route_short_name))) {
@@ -64,12 +65,12 @@ get_timetable_by_route_ids_stop_code_and_short_name <- function(api_key = NULL,
   query <- list(route_ids = route_ids,
                 stop_code = stop_code,
                 route_short_name = route_short_name)
-  res <- get_akl(api_key, path, query = query)
+  res <- get_akl(path, query = query)
   tibble::as_tibble(res)
 }
 
 # get calender by service
-get_calender_by_service <- function(api_key = NULL, service_id = NULL) {
+get_calender_by_service <- function(service_id = NULL) {
   if (is.null(service_id)) {
     stop("service_id is required")
   }
@@ -78,7 +79,7 @@ get_calender_by_service <- function(api_key = NULL, service_id = NULL) {
 }
 
 # get calender dates by service
-get_calender_dates_by_service <- function(api_key = NULL, service_id = NULL) {
+get_calender_dates_by_service <- function(service_id = NULL) {
   if (is.null(service_id)) {
     stop("service_id is required")
   }
@@ -115,16 +116,17 @@ get_routes_by_location <- function(api_key = NULL,
 }
 
 #get routes by long name
-get_routes_by_long_name <- function(api_key = NULL, route_long_name = NULL) {
+get_routes_by_long_name <- function(route_long_name = NULL) {
   if (is.null(route_long_name)) {
     stop("route_long_name is required")
   }
+  route_long_name <- replace_space_with_20(route_long_name)
   path <- paste0("v2/gtfs/routes/routeLongName/", route_long_name)
-  get_akl_by_string(api_key = api_key, path = path)
+  get_akl(path = path)
 }
 
 #get routes by short name
-get_routes_by_short_name <- function(api_key = NULL, route_short_name = NULL) {
+get_routes_by_short_name <- function(route_short_name = NULL) {
   if (is.null(route_short_name)) {
     stop("route_short_name is required")
   }
@@ -133,7 +135,7 @@ get_routes_by_short_name <- function(api_key = NULL, route_short_name = NULL) {
 }
 
 #get routes by stop
-get_routes_by_stop <- function(api_key = NULL, stop_id = NULL) {
+get_routes_by_stop <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
   }
@@ -142,7 +144,7 @@ get_routes_by_stop <- function(api_key = NULL, stop_id = NULL) {
 }
 
 #get routes by route_id
-get_routes_by_route_id <- function(api_key = NULL, route_id = NULL) {
+get_routes_by_route_id <- function(route_id = NULL) {
   if (is.null(route_id)) {
     stop("route_id is required")
   }
@@ -151,7 +153,7 @@ get_routes_by_route_id <- function(api_key = NULL, route_id = NULL) {
 }
 
 #get routes by search_text
-get_routes_by_search_text <- function(api_key = NULL, search_text = NULL) {
+get_routes_by_search_text <- function(search_text = NULL) {
   if (is.null(search_text)) {
     stop("search_text is required")
   }
@@ -160,7 +162,7 @@ get_routes_by_search_text <- function(api_key = NULL, search_text = NULL) {
 }
 
 #get shape geometry by shape_id
-get_shape_geometry_by_shape_id <- function(api_key = NULL, shape_id = NULL) {
+get_shape_geometry_by_shape_id <- function(shape_id = NULL) {
   if (is.null(shape_id)) {
     stop("shape_id is required")
   }
@@ -169,7 +171,7 @@ get_shape_geometry_by_shape_id <- function(api_key = NULL, shape_id = NULL) {
 }
 
 #get shapes by shape_id
-get_shapes_by_shape_id <- function(api_key = NULL, shape_id = NULL) {
+get_shapes_by_shape_id <- function(shape_id = NULL) {
   if (is.null(shape_id)) {
     stop("shape_id is required")
   }
@@ -178,7 +180,7 @@ get_shapes_by_shape_id <- function(api_key = NULL, shape_id = NULL) {
 }
 
 #get shapes by trip_id
-get_shapes_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
+get_shapes_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
   }
@@ -187,7 +189,7 @@ get_shapes_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
 }
 
 #get stop by stop_code
-get_stop_by_stop_code <- function(api_key = NULL, stop_code = NULL) {
+get_stop_by_stop_code <- function(stop_code = NULL) {
   if (is.null(stop_code)) {
     stop("stop_code is required")
   }
@@ -196,7 +198,7 @@ get_stop_by_stop_code <- function(api_key = NULL, stop_code = NULL) {
 }
 
 #get stop by stop_id
-get_stop_by_stop_id <- function(api_key = NULL, stop_id = NULL) {
+get_stop_by_stop_id <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
   }
@@ -205,7 +207,7 @@ get_stop_by_stop_id <- function(api_key = NULL, stop_id = NULL) {
 }
 
 #get stop by trip_id
-get_stop_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
+get_stop_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
   }
@@ -214,7 +216,7 @@ get_stop_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
 }
 
 #get stop by trip from stop
-get_stop_by_trip_from_stop <- function(api_key = NULL, trip_id = NULL,stop_id =NULL) {
+get_stop_by_trip_from_stop <- function(trip_id = NULL,stop_id =NULL) {
   if (is.null(trip_id)||is.null(stop_id)) {
     stop("trip_id and stop_id are required")
   }
@@ -223,7 +225,7 @@ get_stop_by_trip_from_stop <- function(api_key = NULL, trip_id = NULL,stop_id =N
 }
 
 #get info by stop_code
-get_info_by_stop_code <- function(api_key = NULL, stop_code = NULL) {
+get_info_by_stop_code <- function(stop_code = NULL) {
   if (is.null(stop_code)) {
     stop("stop_code is required")
   }
@@ -232,7 +234,7 @@ get_info_by_stop_code <- function(api_key = NULL, stop_code = NULL) {
 }
 
 #get stop times by stop_id
-get_stop_times_by_stop_id <- function(api_key = NULL, stop_id = NULL) {
+get_stop_times_by_stop_id <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
   }
@@ -241,7 +243,7 @@ get_stop_times_by_stop_id <- function(api_key = NULL, stop_id = NULL) {
 }
 
 #get stop times by trip_id
-get_stop_times_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
+get_stop_times_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
   }
@@ -250,7 +252,7 @@ get_stop_times_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
 }
 
 #get stop times by trip and sequence
-get_stop_times_by_trip_and_sequence <- function(api_key = NULL, trip_id = NULL,stop_sequence =NULL) {
+get_stop_times_by_trip_and_sequence <- function(trip_id = NULL,stop_sequence =NULL) {
   if (is.null(trip_id)||is.null(stop_sequence)) {
     stop("trip_id and stop_sequence are required")
   }
@@ -258,7 +260,7 @@ get_stop_times_by_trip_and_sequence <- function(api_key = NULL, trip_id = NULL,s
   get_akl(api_key = api_key, path = path)
 }
 #get stops through BTF search(route_ids)
-get_stops_by_route_ids <- function(api_key = NULL, route_ids = NULL) {
+get_stops_by_route_ids <- function(route_ids = NULL) {
   if (is.null(route_ids)) {
     stop("route_ids are required")
   }
@@ -283,15 +285,16 @@ get_stops_by_location <- function(api_key = NULL,
   tibble::as_tibble(res)
 }
 #get stops by search_text
-get_stops_by_search_text <- function(api_key = NULL, search_text = NULL) {
+get_stops_by_search_text <- function(search_text = NULL) {
   if (is.null(search_text)) {
     stop("search_text is required")
   }
+  search_text <- replace_space_with_20(search_text)
   path <- paste0("v2/gtfs/stops/search/", search_text)
-  get_akl_by_string(api_key = api_key, path = path)
+  tibble::as_tibble(get_akl(path = path))
 }
 #get trips by trip_id
-get_trips_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
+get_trips_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
   }
@@ -300,7 +303,7 @@ get_trips_by_trip_id <- function(api_key = NULL, trip_id = NULL) {
 }
 
 #get trips by route
-get_trips_by_route <- function(api_key = NULL, route_id = NULL) {
+get_trips_by_route <- function(route_id = NULL) {
   if (is.null(route_id)) {
     stop("route_id is required")
   }
@@ -310,8 +313,8 @@ get_trips_by_route <- function(api_key = NULL, route_id = NULL) {
 
 ##### Realtime Transit Feed (GTFS)#####
 #get combined feed??
-get_combined_feed <- function(api_key = NULL) {
-  get_real_time(api_key = api_key, path = "v2/public/realtime")
+get_combined_feed <- function() {
+  get_real_time(path = "v2/public/realtime")
 }
 
 #get ferry positions
