@@ -1,30 +1,21 @@
 # use diff path to get data
-get_akl <- function(api_key = NULL, path = NULL) {
+get_akl <- function(api_key = NULL, path = NULL, query = list()) {
   stop_if_no_key(api_key)
   base_url <- "https://api.at.govt.nz/"
   connection <- GET(base_url,
                     path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key)
+                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
+                    query = query
   )
   stop_for_status(connection,"get the data")
   cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
-  tibble::as_tibble(res)
+  jsonlite::fromJSON(cnt)$response
 }
 
 # real time
 get_real_time <- function(api_key = NULL, path = NULL) {
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key)
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
-  entity <- res$entity
-  tibble::as_tibble(entity)
+  res <- get_akl(api_key, path)
+  tibble::as_tibble(res$entity)
 }
 
 #' Get Auckland bus agency
@@ -36,6 +27,7 @@ get_real_time <- function(api_key = NULL, path = NULL) {
 #' @return A tibble
 #' @export
 get_akl_agency <- function(api_key = NULL) {
+  # TODO: convert list from get_akl() to tibble
   get_akl(api_key = api_key, path = "v2/gtfs/agency")
 }
 
@@ -64,22 +56,15 @@ get_timetable_by_route_ids_stop_code_and_short_name <- function(api_key = NULL,
                                                                 route_ids = NULL,
                                                                 stop_code =NULL,
                                                                 route_short_name =NULL) {
-  if (is.null(route_ids)||is.null(stop_code)||is.null(route_short_name)) {
+  if (all(is.null(route_ids), is.null(stop_code), is.null(route_short_name))) {
     stop("route_ids, stop_code and route_short_name are required")
   }
   path <-"v2/gtfs/btf/timetable"
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = list(route_ids = paste0(route_ids, collapse = ","),
-                                 stop_code=stop_code,
-                                 route_short_name=route_short_name)
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
+  route_ids <- paste0(route_ids, collapse = ",")
+  query <- list(route_ids = route_ids,
+                stop_code = stop_code,
+                route_short_name = route_short_name)
+  res <- get_akl(api_key, path, query = query)
   tibble::as_tibble(res)
 }
 
@@ -109,17 +94,9 @@ get_routes_by_search_string_and_route_types <- function(api_key = NULL,
     stop("search_string and route_types are required")
   }
   path <-"v2/gtfs/btf/routes"
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = list(search_string=search_string,
-                                 route_types = paste0(route_types, collapse = ","))
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
+  query <- list(search_string=search_string,
+                route_types = paste0(route_types, collapse = ","))
+  res <- get_akl(api_key, path = path, query = query)
   tibble::as_tibble(res)
 }
 
@@ -132,18 +109,8 @@ get_routes_by_location <- function(api_key = NULL,
     stop("lat, lng and distance are required")
   }
   path <-"v2/gtfs/routes/geosearch"
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = list(lat=lat,
-                                 lng = lng,
-                                 distance=distance)
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
+  query <- list(lat=lat, lng = lng, distance=distance)
+  res <- get_akl(api_key, path = path, query = query)
   tibble::as_tibble(res)
 }
 
@@ -296,19 +263,10 @@ get_stops_by_route_ids <- function(api_key = NULL, route_ids = NULL) {
     stop("route_ids are required")
   }
   path <-"v2/gtfs/btf/stops"
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = list(route_ids = paste0(route_ids, collapse = ","))
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
+  query <- list(route_ids = paste0(route_ids, collapse = ","))
+  res <- get_akl(api_key, path = path, query = query)
   extract_stops <- res$stops
-  dataframe <- data.frame(res$isline,extract_stops)
-  tibble::as_tibble(dataframe)
+  tibble::tibble(isline = res$isline,extract_stops)
 }
 
 #get stops by location
@@ -320,18 +278,8 @@ get_stops_by_location <- function(api_key = NULL,
     stop("lat, lng and distance are required")
   }
   path <-"v2/gtfs/stops/geosearch"
-  stop_if_no_key(api_key)
-  base_url <- "https://api.at.govt.nz/"
-  connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = list(lat=lat,
-                                 lng = lng,
-                                 distance=distance)
-  )
-  stop_for_status(connection,"get the data")
-  cnt <- content(connection, as = "text")
-  res <- jsonlite::fromJSON(cnt)$response
+  query <- list(lat=lat, lng = lng, distance=distance)
+  res <- get_akl(api_key, path = path, query = query)
   tibble::as_tibble(res)
 }
 #get stops by search_text
