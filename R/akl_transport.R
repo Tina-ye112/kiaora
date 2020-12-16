@@ -27,33 +27,39 @@ get_real_time <- function(path = NULL) {
 #'
 #' @return A tibble
 #' @export
-get_akl_agency <- function(api_key = NULL) {
+get_akl_agency <- function() {
   # TODO: remove api_key
   # TODO: convert list from get_akl() to tibble
-  get_akl(api_key = api_key, path = "v2/gtfs/agency")
+  res <- get_akl( path = "v2/gtfs/agency")
+  tibble::as_tibble(res)
 }
 
-get_akl_calendar_dates <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/gtfs/calendarDate")
+get_akl_calendar_dates <- function() {
+  res <- get_akl(path = "v2/gtfs/calendarDate")
+  tibble::as_tibble(res)
 }
 
-get_akl_calendars <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/gtfs/calendar")
+get_akl_calendars <- function() {
+  res <- get_akl(path = "v2/gtfs/calendar")
+  tibble::as_tibble(res)
 }
 
-get_akl_routes <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/gtfs/routes")
+get_akl_routes <- function() {
+  res <- get_akl(path = "v2/gtfs/routes")
+  tibble::as_tibble(res)
 }
 
-get_akl_stops <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/gtfs/stops")
+get_akl_stops <- function() {
+  res <- get_akl(path = "v2/gtfs/stops")
+  tibble::as_tibble(res)
 }
 
-get_akl_trips <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/gtfs/trips")
+get_akl_trips <- function() {
+  res <- get_akl(path = "v2/gtfs/trips")
+  tibble::as_tibble(res)
 }
 
-#BTF Timetable by short_name,route_ids and stop_code???
+#BTF Timetable by short_name,route_ids and stop_code
 get_timetable_by_route_ids_stop_code_and_short_name <- function(route_ids = NULL,
                                                                 stop_code =NULL,
                                                                 route_short_name =NULL) {
@@ -75,7 +81,8 @@ get_calender_by_service <- function(service_id = NULL) {
     stop("service_id is required")
   }
   path <- paste0("v2/gtfs/calendar/serviceId/", service_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 # get calender dates by service
@@ -84,7 +91,8 @@ get_calender_dates_by_service <- function(service_id = NULL) {
     stop("service_id is required")
   }
   path <- paste0("v2/gtfs/calendarDate/serviceId/", service_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get routes by search_string and route_types
@@ -97,13 +105,12 @@ get_routes_by_search_string_and_route_types <- function(api_key = NULL,
   path <-"v2/gtfs/btf/routes"
   query <- list(search_string=search_string,
                 route_types = paste0(route_types, collapse = ","))
-  res <- get_akl(api_key, path = path, query = query)
+  res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
 
 #get routes by location
-get_routes_by_location <- function(api_key = NULL,
-                                   lat = NULL,
+get_routes_by_location <- function(lat = NULL,
                                    lng = NULL,
                                    distance = NULL) {
   if (is.null(lat)||is.null(lng)||is.null(distance)) {
@@ -111,7 +118,7 @@ get_routes_by_location <- function(api_key = NULL,
   }
   path <-"v2/gtfs/routes/geosearch"
   query <- list(lat=lat, lng = lng, distance=distance)
-  res <- get_akl(api_key, path = path, query = query)
+  res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
 
@@ -122,7 +129,8 @@ get_routes_by_long_name <- function(route_long_name = NULL) {
   }
   route_long_name <- replace_space_with_20(route_long_name)
   path <- paste0("v2/gtfs/routes/routeLongName/", route_long_name)
-  get_akl(path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get routes by short name
@@ -131,7 +139,8 @@ get_routes_by_short_name <- function(route_short_name = NULL) {
     stop("route_short_name is required")
   }
   path <- paste0("v2/gtfs/routes/routeShortName/", route_short_name)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get routes by stop
@@ -140,7 +149,8 @@ get_routes_by_stop <- function(stop_id = NULL) {
     stop("stop_id is required")
   }
   path <- paste0("v2/gtfs/routes/stopid/", stop_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get routes by route_id
@@ -149,7 +159,8 @@ get_routes_by_route_id <- function(route_id = NULL) {
     stop("route_id is required")
   }
   path <- paste0("v2/gtfs/routes/routeId/", route_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get routes by search_text
@@ -158,7 +169,8 @@ get_routes_by_search_text <- function(search_text = NULL) {
     stop("search_text is required")
   }
   path <- paste0("v2/gtfs/routes/search/", search_text)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get shape geometry by shape_id
@@ -167,7 +179,8 @@ get_shape_geometry_by_shape_id <- function(shape_id = NULL) {
     stop("shape_id is required")
   }
   path <- paste0("v2/gtfs/shapes/geometry/", shape_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get shapes by shape_id
@@ -176,7 +189,8 @@ get_shapes_by_shape_id <- function(shape_id = NULL) {
     stop("shape_id is required")
   }
   path <- paste0("v2/gtfs/shapes/shapeId/", shape_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get shapes by trip_id
@@ -185,7 +199,8 @@ get_shapes_by_trip_id <- function(trip_id = NULL) {
     stop("trip_id is required")
   }
   path <- paste0("v2/gtfs/shapes/tripId/", trip_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop by stop_code
@@ -194,7 +209,8 @@ get_stop_by_stop_code <- function(stop_code = NULL) {
     stop("stop_code is required")
   }
   path <- paste0("v2/gtfs/stops/stopCode/", stop_code)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop by stop_id
@@ -203,7 +219,8 @@ get_stop_by_stop_id <- function(stop_id = NULL) {
     stop("stop_id is required")
   }
   path <- paste0("v2/gtfs/stops/stopId/", stop_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop by trip_id
@@ -212,7 +229,8 @@ get_stop_by_trip_id <- function(trip_id = NULL) {
     stop("trip_id is required")
   }
   path <- paste0("v2/gtfs/stops/tripId/", trip_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop by trip from stop
@@ -221,7 +239,8 @@ get_stop_by_trip_from_stop <- function(trip_id = NULL,stop_id =NULL) {
     stop("trip_id and stop_id are required")
   }
   path <- paste0("v2/gtfs/stops/tripId/", trip_id,"/from/",stop_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get info by stop_code
@@ -230,7 +249,8 @@ get_info_by_stop_code <- function(stop_code = NULL) {
     stop("stop_code is required")
   }
   path <- paste0("v2/gtfs/stops/stopinfo/", stop_code)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop times by stop_id
@@ -239,7 +259,8 @@ get_stop_times_by_stop_id <- function(stop_id = NULL) {
     stop("stop_id is required")
   }
   path <- paste0("v2/gtfs/stopTimes/stopId/", stop_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop times by trip_id
@@ -248,7 +269,8 @@ get_stop_times_by_trip_id <- function(trip_id = NULL) {
     stop("trip_id is required")
   }
   path <- paste0("v2/gtfs/stopTimes/tripId/", trip_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get stop times by trip and sequence
@@ -257,8 +279,10 @@ get_stop_times_by_trip_and_sequence <- function(trip_id = NULL,stop_sequence =NU
     stop("trip_id and stop_sequence are required")
   }
   path <- paste0("v2/gtfs/stopTimes/tripId/", trip_id,"/stopSequence/",stop_sequence)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
+
 #get stops through BTF search(route_ids)
 get_stops_by_route_ids <- function(route_ids = NULL) {
   if (is.null(route_ids)) {
@@ -266,22 +290,21 @@ get_stops_by_route_ids <- function(route_ids = NULL) {
   }
   path <-"v2/gtfs/btf/stops"
   query <- list(route_ids = paste0(route_ids, collapse = ","))
-  res <- get_akl(api_key, path = path, query = query)
+  res <- get_akl(path = path, query = query)
   extract_stops <- res$stops
   tibble::tibble(isline = res$isline,extract_stops)
 }
 
 #get stops by location
-get_stops_by_location <- function(api_key = NULL,
-                                   lat = NULL,
-                                   lng = NULL,
-                                   distance = NULL) {
+get_stops_by_location <- function(lat = NULL,
+                                  lng = NULL,
+                                  distance = NULL) {
   if (is.null(lat)||is.null(lng)||is.null(distance)) {
     stop("lat, lng and distance are required")
   }
   path <-"v2/gtfs/stops/geosearch"
   query <- list(lat=lat, lng = lng, distance=distance)
-  res <- get_akl(api_key, path = path, query = query)
+  res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
 #get stops by search_text
@@ -293,13 +316,15 @@ get_stops_by_search_text <- function(search_text = NULL) {
   path <- paste0("v2/gtfs/stops/search/", search_text)
   tibble::as_tibble(get_akl(path = path))
 }
+
 #get trips by trip_id
 get_trips_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
   }
   path <- paste0("v2/gtfs/trips/tripId/", trip_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 #get trips by route
@@ -308,7 +333,8 @@ get_trips_by_route <- function(route_id = NULL) {
     stop("route_id is required")
   }
   path <- paste0("v2/gtfs/trips/routeid/", route_id)
-  get_akl(api_key = api_key, path = path)
+  res <- get_akl(path = path)
+  tibble::as_tibble(res)
 }
 
 ##### Realtime Transit Feed (GTFS)#####
@@ -322,5 +348,6 @@ get_ferry_positions <- function(api_key = NULL) {
   get_akl(api_key = api_key, path = "v2/public/realtime/ferrypositions")
 }
 
+#####stats open data######
 
 
