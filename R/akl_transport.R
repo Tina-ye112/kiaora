@@ -602,43 +602,6 @@ get_trips_by_route <- function(route_id = NULL) {
   tibble::as_tibble(res)
 }
 
-##### Realtime Transit Feed (GTFS)#####
-#get combined feed??
-get_combined_feed <- function() {
-  get_real_time(path = "v2/public/realtime")
-}
 
-#get ferry positions
-get_ferry_positions <- function(api_key = NULL) {
-  get_akl(api_key = api_key, path = "v2/public/realtime/ferrypositions")
-}
 
-#####stats open data######
-base_url <- "https://api.stats.govt.nz"
-path <- "odata/v1/Covid-19Indicators"
-connection <- GET(base_url,
-                  path = path,
-                  add_headers("Ocp-Apim-Subscription-Key" = "")
 
-)
-stop_for_status(connection,"get the data")
-cnt <- content(connection, as = "text")
-jsonlite::fromJSON(cnt)$value
-
-####https://data.mfe.govt.nz/####
-base_url <-"https://data.mfe.govt.nz"
-path <- "services/query/v1/vector.json"
-query <- list(key="",
-              layer="51845",
-              x="121.1875777343931",
-              y="25.25763028477236",
-              max_results="3",
-              geometry="true",
-              with_field_names="true",
-              radius="10000")
-connection <- GET(base_url,
-                  path=path,
-                  query=query)
-stop_for_status(connection,"get the data")
-cnt <- content(connection, as = "text")
-jsonlite::fromJSON(cnt)
