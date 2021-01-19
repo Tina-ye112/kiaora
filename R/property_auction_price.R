@@ -17,7 +17,7 @@ get_property_auction_price <- function(region,district,area,agency){
                            "region=",replace_space_with_20(region),
                            "&district=",replace_space_with_20(district),
                            "&area=",replace_space_with_20(area),
-                           "&agency=",agency(agency),
+                           "&agency=",agency,
                            "&status=Sold&page=",i)
     page <- read_html(property_url)
     table_new <- data.frame(address = html_text(html_nodes(page,".address")),
