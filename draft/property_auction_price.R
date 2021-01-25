@@ -2,40 +2,60 @@ install.packages("rvest")
 install.packages("dplyr")
 install.packages("lubridate")
 install.packages("tidyverse")
+install.packages("purrr")
 
 library(rvest)
 library(dplyr)
 library(lubridate)
 library(tidyverse)
+library(purrr)
 
-get_property_auction_price <- function(region,district,area,agency){
-  table_new <- data.frame()
-  df <- data.frame()
-  i=1
-  while (i<20) {
-    property_url <- paste0("https://www.interest.co.nz/property/residential-auction-results?",
-                           "region=",replace_space_with_20(region),
-                           "&district=",replace_space_with_20(district),
-                           "&area=",replace_space_with_20(area),
-                           "&agency=",agency,
-                           "&status=Sold&page=",i)
-    page <- read_html(property_url)
-    table_new <- data.frame(address = html_text(html_nodes(page,".address")),
-                            dates = html_text(html_nodes(page,".padb-auction-details")),
-                            price = html_text(html_nodes(page,".padb-property-value")),
-                            stringsAsFactors = FALSE)
-    df <- rbind(df,table_new)
-    i=i+1
-  }
-  df$price <- sub(".*: ","",df$price)
-  df$price <- sub(" .*","",df$price)
-  df$price <- suppressWarnings(as.numeric(gsub('[$,]','',df$price)))
-  df <- na.omit(df)
-  df$dates <- sub(".*, ","",df$dates)
-  df$dates <- gsub("'","",df$dates)
-  df$dates <- dmy(df$dates)
-  tibble::as_tibble(df)
+#get_one_page function
+get_one_page <- function(url){
+  page <- read_html(url)
+  enclosing_nodes <-  html_nodes(page,'.padb-property-card')
+  df <- map_dfr(enclosing_nodes,~list(
+    property_address=html_text(html_node(.x,".address")),
+    auction_price=html_text(html_node(.x, '.padb-property-value')),
+    auction_dates=html_text(html_node(.x,".padb-auction-details"),trim = TRUE),
+    bedrooms={if(length(html_text(html_node(.x,".padb-beds"))) == 0) NA else html_text(html_node(.x,".padb-beds"))},
+    bathrooms={if(length(html_text(html_node(.x,".padb-baths"))) == 0) NA else html_text(html_node(.x,".padb-baths"))},
+    car_parking={if(length(html_text(html_node(.x,".padb-parking"))) == 0) NA else html_text(html_node(.x,".padb-parking"))},
+    rating_value={if(length(html_text(html_node(.x,".padb-property-rating-value , .padb-rating-date"))) == 0) NA else html_text(html_node(.x,".padb-property-rating-value , .padb-rating-date"),trim=TRUE)},
+    rating_dates={if(length(html_text(html_node(.x,".padb-rating-date"))) == 0) NA else html_text(html_node(.x,".padb-rating-date"))})
+  )
+  df$auction_price <- as.numeric(gsub("[^[:digit:]]", "", df$auction_price))
+  df$auction_dates <- dmy(df$auction_dates)
+  df$rating_value <- lapply(df$rating_value, get_rating_value)
+  df$rating_value <- as.numeric(gsub("[^[:digit:]]", "", df$rating_value))
+  df$rating_dates <- my(df$rating_dates)
+  df
 }
 
+#replace null with "-" function
+replace_null <- function(region=NULL){
+  if (is.null(region)){
+    region="-"
+  }
+  region
+}
 
+#get_rating_value function
+get_rating_value <- function(rating_value){
+  str_split(rating_value," ")[[1]][3]
+}
+
+#get_property_auction_price function
+get_property_auction_price <- function(region=NULL,district=NULL,area=NULL){
+  num <- 1:625
+  urls <- paste0("https://www.interest.co.nz/property/residential-auction-results?",
+                 "region=",replace_space_with_20(replace_null(region)),
+                 "&district=",replace_space_with_20(replace_null(district)),
+                 "&area=",replace_space_with_20(replace_null(area)),
+                 "&agency=-",
+                 "&status=Sold&page=",num)
+  bind_rows(lapply(urls, get_one_page))
+}
+
+get_property_auction_price(region ="Bay of Plenty" ,district = ,area = )
 
