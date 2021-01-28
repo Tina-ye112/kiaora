@@ -67,7 +67,7 @@ replace_null <- function(region=NULL){
 #get_number_of_results function
 get_number_of_results <- function(region=NULL){
   if (is.null(region)){
-    get_number(replace_null(region))
+    return(get_number(replace_null(region)))
   }
   get_number(replace_space_with_20(region))
 }
@@ -94,4 +94,4 @@ replace_blank_with_na <- function(x,y){
   {if(length(get_html_text(x,y)) == 0) NA else get_html_text(x,y)}
 }
 
-get_property_auction_price(region = "Bay of Plenty",district = ,area=)
+get_property_auction_price(region = ,district = ,area=)
