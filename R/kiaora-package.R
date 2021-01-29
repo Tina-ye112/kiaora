@@ -1,4 +1,4 @@
 #' kiaora
 #'
-#' @import httr rlang
+#' @import httr rlang rvest  dplyr  purrr
 "_PACKAGE"
