@@ -57,8 +57,8 @@ You can also embed plots, for example:
 
 ```{r}
 library(ggplot2)
-ggplot(nzhousingprice,aes(x=rating_value,y=auction_price))+geom_point()+
-  geom_smooth(method = 'lm')+xlim(0,11000000)+ylim(0,11000000)
+ggplot(data=subset(nzhousingprice,region=="Auckland"&district=="North Shore City"))+
+  geom_line(aes(x=auction_dates,y=auction_price))
 ```
 
 In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!

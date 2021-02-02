@@ -5,6 +5,8 @@ get_one_page <- function(url) {
   page <- read_html(url)
   enclosing_nodes <- html_nodes(page, ".padb-property-card")
   df <- map_dfr(enclosing_nodes, ~ list(
+    region = get_html_text(.x, ".region-district"),
+    district = get_html_text(.x, ".region-district"),
     property_address = get_html_text(.x, ".address"),
     auction_price = get_html_text(.x, ".padb-property-value"),
     auction_dates = get_html_text(.x, ".padb-auction-details"),
@@ -16,6 +18,8 @@ get_one_page <- function(url) {
   ))
   df <- mutate(
     df,
+    region = sub(",.*","",region),
+    district = sub(".*, ","",district),
     auction_price = as.numeric(gsub("[^[:digit:]]", "", auction_price)),
     auction_dates = dmy(auction_dates),
     bedrooms = as.numeric(bedrooms),

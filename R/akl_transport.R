@@ -25,7 +25,7 @@ get_real_time <- function(path = NULL) {
 #'
 #' @return A tibble
 #' @export
-#' @examples
+#' @examples do not run
 #' get_akl_agency()
 get_akl_agency <- function() {
   res <- get_akl(path = "v2/gtfs/agency")
