@@ -42,6 +42,10 @@ This function contains 3 parameters that are region, district, area.You could ..
 
 ```{r}
 library(kiaora)
+```
+
+
+```{r, eval=FALSE}
 get_property_auction_price(region = "Northland",district = NULL,area = NULL)
 ```
 
