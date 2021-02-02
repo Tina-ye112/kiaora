@@ -1,5 +1,7 @@
 # get_one_page function
 get_one_page <- function(url) {
+  auction_price <- auction_dates <- bedrooms <- bathrooms<-
+  car_parking <- rating_value <- rating_dates <- NULL
   page <- read_html(url)
   enclosing_nodes <- html_nodes(page, ".padb-property-card")
   df <- map_dfr(enclosing_nodes, ~ list(
@@ -15,12 +17,12 @@ get_one_page <- function(url) {
   df <- mutate(
     df,
     auction_price = as.numeric(gsub("[^[:digit:]]", "", auction_price)),
-    auction_dates = lubridate::dmy(auction_dates),
+    auction_dates = dmy(auction_dates),
     bedrooms = as.numeric(bedrooms),
     bathrooms = as.numeric(bathrooms),
     car_parking = as.numeric(car_parking),
     rating_value = as.numeric(gsub("[^[:digit:]]", "", map(rating_value, get_rating_value))),
-    rating_dates = stringr::str_sub(lubridate::my(rating_dates), 1, 7)
+    rating_dates = my(rating_dates)
   )
   df
 }
@@ -29,10 +31,21 @@ get_one_page <- function(url) {
 
 # get_rating_value function
 get_rating_value <- function(rating_value) {
-  stringr::str_split(rating_value, " ")[[1]][3]
+  str_split(rating_value, " ")[[1]][3]
 }
 
-# get_property_auction_price function
+#' Get property auction price
+#'
+#' @description Query auction price and other information for NZ property
+#'
+#' @param region string e.g.,Auckland
+#' @param district string e.g.,Auckland City
+#' @param area string e.g.,One Tree Hill
+#' @return A tibble
+#' @export
+#' @examples
+#' get_property_auction_price(region = "Northland", district = , area = )
+#' # get_property_auction_price function
 get_property_auction_price <- function(region = NULL, district = NULL, area = NULL) {
   num <- 1:ceiling(get_number_of_results(region = region) / 25)
   urls <- paste0(
@@ -82,5 +95,3 @@ get_html_text <- function(x, y) {
 
 # replace blank with na function
 replace_blank_with_na <- function(x, y) {{ if (length(get_html_text(x, y)) == 0) NA else get_html_text(x, y) }}
-
-

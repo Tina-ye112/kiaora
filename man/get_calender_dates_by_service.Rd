@@ -17,4 +17,5 @@ Query calendar dates by service id
 }
 \examples{
 get_calender_dates_by_service(service_id = "467236433-20201222141234_v95.107")
+# get calender dates by service
 }

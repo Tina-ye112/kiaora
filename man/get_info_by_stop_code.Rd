@@ -17,4 +17,5 @@ Query stop info by stop code
 }
 \examples{
 get_info_by_stop_code(stop_code = "1371")
+# get info by stop_code
 }

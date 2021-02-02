@@ -17,4 +17,5 @@ Query trips by route id
 }
 \examples{
 get_trips_by_route(route_id = "840007-20201221160823_v95.106")
+# get trips by route
 }

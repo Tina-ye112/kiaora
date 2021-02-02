@@ -6,7 +6,9 @@
 \alias{kiaora-package}
 \title{kiaora}
 \description{
-What the package does (one paragraph).
+This is a package with functions to get Auckland transport 
+    information and residential auction results for NZ property, including 
+    property information,auction price and dates, rating value and dates.
 }
 \author{
 \strong{Maintainer}: Tina Ye \email{xye112@aucklanduni.ac.nz}

@@ -16,5 +16,6 @@ A tibble
 Query stop by stop code
 }
 \examples{
-get_stop_by_stop_code(stop_code ="97")
+get_stop_by_stop_code(stop_code = "97")
+# get stop by stop_code
 }

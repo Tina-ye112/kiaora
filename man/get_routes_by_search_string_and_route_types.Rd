@@ -21,6 +21,9 @@ A tibble
 Query routes by search_string and route_types
 }
 \examples{
-get_routes_by_search_string_and_route_types(search_string = "Albany Station",
-                                            route_types = c("3","2"))
+get_routes_by_search_string_and_route_types(
+  search_string = "Albany Station",
+  route_types = c("3", "2")
+)
+# get routes by search_string and route_types
 }

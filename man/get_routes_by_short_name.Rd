@@ -17,4 +17,5 @@ Query routes by short name
 }
 \examples{
 get_routes_by_short_name(route_short_name = "326")
+# get routes by short name
 }

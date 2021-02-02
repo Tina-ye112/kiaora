@@ -20,7 +20,10 @@ A tibble
 Query stops by location
 }
 \examples{
-get_stops_by_location(lat = "-37.06429",
-                      lng = "174.94611",
-                      distance = "10")
+get_stops_by_location(
+  lat = "-37.06429",
+  lng = "174.94611",
+  distance = "10"
+)
+# get stops by location
 }

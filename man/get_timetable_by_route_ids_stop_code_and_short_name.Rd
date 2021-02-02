@@ -24,7 +24,10 @@ A tibble
 Query timetable
 }
 \examples{
-get_timetable_by_route_ids_stop_code_and_short_name(route_ids = c("90111-20201205123725_v95.82,05363-20201205123725_v95.82"),
-                                                                  stop_code = "3637",
-                                                                  route_short_name = "901")
+get_timetable_by_route_ids_stop_code_and_short_name(
+  route_ids = c("90111-20201205123725_v95.82,
+                 05363-20201205123725_v95.82"),
+  stop_code = "3637",
+  route_short_name = "901"
+)
 }

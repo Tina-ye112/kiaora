@@ -4,11 +4,11 @@ get_akl <- function(path = NULL, query = list()) {
   stop_if_no_key(api_key)
   base_url <- "https://api.at.govt.nz/"
   connection <- GET(base_url,
-                    path = path,
-                    add_headers("Ocp-Apim-Subscription-Key" = api_key),
-                    query = query
+    path = path,
+    add_headers("Ocp-Apim-Subscription-Key" = api_key),
+    query = query
   )
-  stop_for_status(connection,"get the data")
+  stop_for_status(connection, "get the data")
   cnt <- content(connection, as = "text")
   jsonlite::fromJSON(cnt)$response
 }
@@ -28,7 +28,7 @@ get_real_time <- function(path = NULL) {
 #' @examples
 #' get_akl_agency()
 get_akl_agency <- function() {
-  res <- get_akl( path = "v2/gtfs/agency")
+  res <- get_akl(path = "v2/gtfs/agency")
   tibble::as_tibble(res)
 }
 
@@ -106,20 +106,25 @@ get_akl_trips <- function() {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_timetable_by_route_ids_stop_code_and_short_name(route_ids = c("90111-20201205123725_v95.82,05363-20201205123725_v95.82"),
-#'                                                                   stop_code = "3637",
-#'                                                                   route_short_name = "901")
+#' get_timetable_by_route_ids_stop_code_and_short_name(
+#'   route_ids = c("90111-20201205123725_v95.82,
+#'                  05363-20201205123725_v95.82"),
+#'   stop_code = "3637",
+#'   route_short_name = "901"
+#' )
 get_timetable_by_route_ids_stop_code_and_short_name <- function(route_ids = NULL,
-                                                                stop_code =NULL,
-                                                                route_short_name =NULL) {
+                                                                stop_code = NULL,
+                                                                route_short_name = NULL) {
   if (all(is.null(route_ids), is.null(stop_code), is.null(route_short_name))) {
     stop("route_ids, stop_code and route_short_name are required")
   }
-  path <-"v2/gtfs/btf/timetable"
+  path <- "v2/gtfs/btf/timetable"
   route_ids <- paste0(route_ids, collapse = ",")
-  query <- list(route_ids = route_ids,
-                stop_code = stop_code,
-                route_short_name = route_short_name)
+  query <- list(
+    route_ids = route_ids,
+    stop_code = stop_code,
+    route_short_name = route_short_name
+  )
   res <- get_akl(path, query = query)
   tibble::as_tibble(res)
 }
@@ -132,7 +137,7 @@ get_timetable_by_route_ids_stop_code_and_short_name <- function(route_ids = NULL
 #' @export
 #' @examples
 #' get_calender_by_service(service_id = "467236433-20201222141234_v95.107")
-# get calender by service
+#' # get calender by service
 get_calender_by_service <- function(service_id = NULL) {
   if (is.null(service_id)) {
     stop("service_id is required")
@@ -150,7 +155,7 @@ get_calender_by_service <- function(service_id = NULL) {
 #' @export
 #' @examples
 #' get_calender_dates_by_service(service_id = "467236433-20201222141234_v95.107")
-# get calender dates by service
+#' # get calender dates by service
 get_calender_dates_by_service <- function(service_id = NULL) {
   if (is.null(service_id)) {
     stop("service_id is required")
@@ -168,17 +173,21 @@ get_calender_dates_by_service <- function(service_id = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_routes_by_search_string_and_route_types(search_string = "Albany Station",
-#'                                             route_types = c("3","2"))
-#get routes by search_string and route_types
+#' get_routes_by_search_string_and_route_types(
+#'   search_string = "Albany Station",
+#'   route_types = c("3", "2")
+#' )
+#' # get routes by search_string and route_types
 get_routes_by_search_string_and_route_types <- function(search_string = NULL,
-                                                        route_types =NULL) {
-  if (is.null(search_string)||is.null(route_types)) {
+                                                        route_types = NULL) {
+  if (is.null(search_string) || is.null(route_types)) {
     stop("search_string and route_types are required")
   }
-  path <-"v2/gtfs/btf/routes"
-  query <- list(search_string=search_string,
-                route_types = paste0(route_types, collapse = ","))
+  path <- "v2/gtfs/btf/routes"
+  query <- list(
+    search_string = search_string,
+    route_types = paste0(route_types, collapse = ",")
+  )
   res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
@@ -193,18 +202,20 @@ get_routes_by_search_string_and_route_types <- function(search_string = NULL,
 #' @return A tibble
 #' @export
 #' @examples
-#' get_routes_by_location(lat = "-37.06429",
-#'                        lng = "174.94611",
-#'                        distance = "10")
-#get routes by location
+#' get_routes_by_location(
+#'   lat = "-37.06429",
+#'   lng = "174.94611",
+#'   distance = "10"
+#' )
+#' # get routes by location
 get_routes_by_location <- function(lat = NULL,
                                    lng = NULL,
                                    distance = NULL) {
-  if (is.null(lat)||is.null(lng)||is.null(distance)) {
+  if (is.null(lat) || is.null(lng) || is.null(distance)) {
     stop("lat, lng and distance are required")
   }
-  path <-"v2/gtfs/routes/geosearch"
-  query <- list(lat=lat, lng = lng, distance=distance)
+  path <- "v2/gtfs/routes/geosearch"
+  query <- list(lat = lat, lng = lng, distance = distance)
   res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
@@ -217,7 +228,7 @@ get_routes_by_location <- function(lat = NULL,
 #' @export
 #' @examples
 #' get_routes_by_long_name(route_long_name = "Mangere Town Centre To Otahuhu Station Via Tidal Road")
-#get routes by long name
+#' # get routes by long name
 get_routes_by_long_name <- function(route_long_name = NULL) {
   if (is.null(route_long_name)) {
     stop("route_long_name is required")
@@ -236,7 +247,7 @@ get_routes_by_long_name <- function(route_long_name = NULL) {
 #' @export
 #' @examples
 #' get_routes_by_short_name(route_short_name = "326")
-#get routes by short name
+#' # get routes by short name
 get_routes_by_short_name <- function(route_short_name = NULL) {
   if (is.null(route_short_name)) {
     stop("route_short_name is required")
@@ -253,8 +264,8 @@ get_routes_by_short_name <- function(route_short_name = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_routes_by_stop(stop_id ="1369-20201221160823_v95.106" )
-#get routes by stop
+#' get_routes_by_stop(stop_id = "1369-20201221160823_v95.106")
+#' # get routes by stop
 get_routes_by_stop <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
@@ -272,7 +283,7 @@ get_routes_by_stop <- function(stop_id = NULL) {
 #' @export
 #' @examples
 #' get_routes_by_route_id(route_id = "84303-20201221160823_v95.106")
-#get routes by route_id
+#' # get routes by route_id
 get_routes_by_route_id <- function(route_id = NULL) {
   if (is.null(route_id)) {
     stop("route_id is required")
@@ -291,7 +302,7 @@ get_routes_by_route_id <- function(route_id = NULL) {
 #' @export
 #' @examples
 #' get_routes_by_search_text(search_text = "Albany")
-#get routes by search_text
+#' # get routes by search_text
 get_routes_by_search_text <- function(search_text = NULL) {
   if (is.null(search_text)) {
     stop("search_text is required")
@@ -309,7 +320,7 @@ get_routes_by_search_text <- function(search_text = NULL) {
 #' @export
 #' @examples
 #' get_shape_geometry_by_shape_id(shape_id = "1192-20201221160823_v95.106")
-#get shape geometry by shape_id
+#' # get shape geometry by shape_id
 get_shape_geometry_by_shape_id <- function(shape_id = NULL) {
   if (is.null(shape_id)) {
     stop("shape_id is required")
@@ -327,7 +338,7 @@ get_shape_geometry_by_shape_id <- function(shape_id = NULL) {
 #' @export
 #' @examples
 #' get_shapes_by_shape_id(shape_id = "1192-20201221160823_v95.106")
-#get shapes by shape_id
+#' # get shapes by shape_id
 get_shapes_by_shape_id <- function(shape_id = NULL) {
   if (is.null(shape_id)) {
     stop("shape_id is required")
@@ -345,7 +356,7 @@ get_shapes_by_shape_id <- function(shape_id = NULL) {
 #' @export
 #' @examples
 #' get_shapes_by_trip_id(trip_id = "51100221657-20201221160823_v95.106")
-#get shapes by trip_id
+#' # get shapes by trip_id
 get_shapes_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
@@ -362,8 +373,8 @@ get_shapes_by_trip_id <- function(trip_id = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_stop_by_stop_code(stop_code ="97")
-#get stop by stop_code
+#' get_stop_by_stop_code(stop_code = "97")
+#' # get stop by stop_code
 get_stop_by_stop_code <- function(stop_code = NULL) {
   if (is.null(stop_code)) {
     stop("stop_code is required")
@@ -381,7 +392,7 @@ get_stop_by_stop_code <- function(stop_code = NULL) {
 #' @export
 #' @examples
 #' get_stop_by_stop_id(stop_id = "1369-20201221160823_v95.106")
-#get stop by stop_id
+#' # get stop by stop_id
 get_stop_by_stop_id <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
@@ -399,7 +410,7 @@ get_stop_by_stop_id <- function(stop_id = NULL) {
 #' @export
 #' @examples
 #' get_stop_by_trip_id(trip_id = "51100221657-20201221160823_v95.106")
-#get stop by trip_id
+#' # get stop by trip_id
 get_stop_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
@@ -417,14 +428,16 @@ get_stop_by_trip_id <- function(trip_id = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_stop_by_trip_from_stop(trip_id = "51100221657-20201221160823_v95.106",
-#'                            stop_id = "0140-20201221160823_v95.106")
-#get stop by trip from stop
-get_stop_by_trip_from_stop <- function(trip_id = NULL,stop_id =NULL) {
-  if (is.null(trip_id)||is.null(stop_id)) {
+#' get_stop_by_trip_from_stop(
+#'   trip_id = "51100221657-20201221160823_v95.106",
+#'   stop_id = "0140-20201221160823_v95.106"
+#' )
+#' # get stop by trip from stop
+get_stop_by_trip_from_stop <- function(trip_id = NULL, stop_id = NULL) {
+  if (is.null(trip_id) || is.null(stop_id)) {
     stop("trip_id and stop_id are required")
   }
-  path <- paste0("v2/gtfs/stops/tripId/", trip_id,"/from/",stop_id)
+  path <- paste0("v2/gtfs/stops/tripId/", trip_id, "/from/", stop_id)
   res <- get_akl(path = path)
   tibble::as_tibble(res)
 }
@@ -437,7 +450,7 @@ get_stop_by_trip_from_stop <- function(trip_id = NULL,stop_id =NULL) {
 #' @export
 #' @examples
 #' get_info_by_stop_code(stop_code = "1371")
-#get info by stop_code
+#' # get info by stop_code
 get_info_by_stop_code <- function(stop_code = NULL) {
   if (is.null(stop_code)) {
     stop("stop_code is required")
@@ -455,7 +468,7 @@ get_info_by_stop_code <- function(stop_code = NULL) {
 #' @export
 #' @examples
 #' get_stop_times_by_stop_id(stop_id = "1369-20201221160823_v95.106")
-#get stop times by stop_id
+#' # get stop times by stop_id
 get_stop_times_by_stop_id <- function(stop_id = NULL) {
   if (is.null(stop_id)) {
     stop("stop_id is required")
@@ -473,7 +486,7 @@ get_stop_times_by_stop_id <- function(stop_id = NULL) {
 #' @export
 #' @examples
 #' get_stop_times_by_trip_id(trip_id = "465203730-20201221160823_v95.106")
-#get stop times by trip_id
+#' # get stop times by trip_id
 get_stop_times_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
@@ -491,14 +504,16 @@ get_stop_times_by_trip_id <- function(trip_id = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_stop_times_by_trip_and_sequence(trip_id = "465203730-20201221160823_v95.106",
-#'                                     stop_sequence = "1")
-#get stop times by trip and sequence
-get_stop_times_by_trip_and_sequence <- function(trip_id = NULL,stop_sequence =NULL) {
-  if (is.null(trip_id)||is.null(stop_sequence)) {
+#' get_stop_times_by_trip_and_sequence(
+#'   trip_id = "465203730-20201221160823_v95.106",
+#'   stop_sequence = "1"
+#' )
+#' # get stop times by trip and sequence
+get_stop_times_by_trip_and_sequence <- function(trip_id = NULL, stop_sequence = NULL) {
+  if (is.null(trip_id) || is.null(stop_sequence)) {
     stop("trip_id and stop_sequence are required")
   }
-  path <- paste0("v2/gtfs/stopTimes/tripId/", trip_id,"/stopSequence/",stop_sequence)
+  path <- paste0("v2/gtfs/stopTimes/tripId/", trip_id, "/stopSequence/", stop_sequence)
   res <- get_akl(path = path)
   tibble::as_tibble(res)
 }
@@ -511,16 +526,16 @@ get_stop_times_by_trip_and_sequence <- function(trip_id = NULL,stop_sequence =NU
 #' @export
 #' @examples
 #' get_stops_by_route_ids(route_ids = c("06259-20201126121446_v95.73,32601-20201205123725_v95.82"))
-#get stops through BTF search(route_ids)
+#' # get stops through BTF search(route_ids)
 get_stops_by_route_ids <- function(route_ids = NULL) {
   if (is.null(route_ids)) {
     stop("route_ids are required")
   }
-  path <-"v2/gtfs/btf/stops"
+  path <- "v2/gtfs/btf/stops"
   query <- list(route_ids = paste0(route_ids, collapse = ","))
   res <- get_akl(path = path, query = query)
   extract_stops <- res$stops
-  tibble::tibble(isline = res$isline,extract_stops)
+  tibble::tibble(isline = res$isline, extract_stops)
 }
 
 #' Get stops by location
@@ -532,18 +547,20 @@ get_stops_by_route_ids <- function(route_ids = NULL) {
 #' @return A tibble
 #' @export
 #' @examples
-#' get_stops_by_location(lat = "-37.06429",
-#'                       lng = "174.94611",
-#'                       distance = "10")
-#get stops by location
+#' get_stops_by_location(
+#'   lat = "-37.06429",
+#'   lng = "174.94611",
+#'   distance = "10"
+#' )
+#' # get stops by location
 get_stops_by_location <- function(lat = NULL,
                                   lng = NULL,
                                   distance = NULL) {
-  if (is.null(lat)||is.null(lng)||is.null(distance)) {
+  if (is.null(lat) || is.null(lng) || is.null(distance)) {
     stop("lat, lng and distance are required")
   }
-  path <-"v2/gtfs/stops/geosearch"
-  query <- list(lat=lat, lng = lng, distance=distance)
+  path <- "v2/gtfs/stops/geosearch"
+  query <- list(lat = lat, lng = lng, distance = distance)
   res <- get_akl(path = path, query = query)
   tibble::as_tibble(res)
 }
@@ -556,7 +573,7 @@ get_stops_by_location <- function(lat = NULL,
 #' @export
 #' @examples
 #' get_stops_by_search_text(search_text = "Hinemoa St")
-#get stops by search_text
+#' # get stops by search_text
 get_stops_by_search_text <- function(search_text = NULL) {
   if (is.null(search_text)) {
     stop("search_text is required")
@@ -574,7 +591,7 @@ get_stops_by_search_text <- function(search_text = NULL) {
 #' @export
 #' @examples
 #' get_trips_by_trip_id(trip_id = "465203730-20201221160823_v95.106")
-#get trips by trip_id
+#' # get trips by trip_id
 get_trips_by_trip_id <- function(trip_id = NULL) {
   if (is.null(trip_id)) {
     stop("trip_id is required")
@@ -592,7 +609,7 @@ get_trips_by_trip_id <- function(trip_id = NULL) {
 #' @export
 #' @examples
 #' get_trips_by_route(route_id = "840007-20201221160823_v95.106")
-#get trips by route
+#' # get trips by route
 get_trips_by_route <- function(route_id = NULL) {
   if (is.null(route_id)) {
     stop("route_id is required")
@@ -601,7 +618,3 @@ get_trips_by_route <- function(route_id = NULL) {
   res <- get_akl(path = path)
   tibble::as_tibble(res)
 }
-
-
-
-

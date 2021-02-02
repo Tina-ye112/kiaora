@@ -17,4 +17,5 @@ Query routes by routes id
 }
 \examples{
 get_routes_by_route_id(route_id = "84303-20201221160823_v95.106")
+# get routes by route_id
 }

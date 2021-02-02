@@ -18,6 +18,9 @@ A tibble
 Query stop by Trip from stop
 }
 \examples{
-get_stop_by_trip_from_stop(trip_id = "51100221657-20201221160823_v95.106",
-                           stop_id = "0140-20201221160823_v95.106")
+get_stop_by_trip_from_stop(
+  trip_id = "51100221657-20201221160823_v95.106",
+  stop_id = "0140-20201221160823_v95.106"
+)
+# get stop by trip from stop
 }

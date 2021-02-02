@@ -17,4 +17,5 @@ Query stops by search text
 }
 \examples{
 get_stops_by_search_text(search_text = "Hinemoa St")
+# get stops by search_text
 }

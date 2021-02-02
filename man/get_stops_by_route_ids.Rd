@@ -17,4 +17,5 @@ Query stops by route ids
 }
 \examples{
 get_stops_by_route_ids(route_ids = c("06259-20201126121446_v95.73,32601-20201205123725_v95.82"))
+# get stops through BTF search(route_ids)
 }

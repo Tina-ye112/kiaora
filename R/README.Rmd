@@ -1,0 +1,64 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# kiaora
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of kiaora is to provide functions to get Auckland transport 
+information and residential auction results for NZ property, including 
+property information,auction price and dates, rating value and dates.
+
+## Installation
+
+You can install the released version of kiaora from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("kiaora")
+```
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("Tina-ye112/kiaora")
+```
+## Usage
+
+This function contains 3 parameters that are region, district, area.You could ...
+
+```{r}
+library(kiaora)
+get_property_auction_price(region = "Northland",district = NULL,area = NULL)
+```
+
+What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+
+```{r}
+summary(nzhousingprice)
+```
+
+You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+
+You can also embed plots, for example:
+
+```{r}
+library(ggplot2)
+ggplot(nzhousingprice,aes(x=rating_value,y=auction_price))+geom_point()+
+  geom_smooth(method = 'lm')+xlim(0,11000000)+ylim(0,11000000)
+```
+
+In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!

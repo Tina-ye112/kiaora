@@ -17,4 +17,5 @@ Query routes by search text
 }
 \examples{
 get_routes_by_search_text(search_text = "Albany")
+# get routes by search_text
 }

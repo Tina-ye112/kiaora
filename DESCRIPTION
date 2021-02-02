@@ -1,12 +1,14 @@
 Package: kiaora
-Title: What the Package Does (One Line, Title Case)
+Title: A package to get NZ open data
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Tina",
            family = "Ye",
            role = c("aut", "cre"),
            email = "xye112@aucklanduni.ac.nz")
-Description: What the package does (one paragraph).
+Description: This is a package with functions to get Auckland transport 
+    information and residential auction results for NZ property, including 
+    property information,auction price and dates, rating value and dates.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -16,4 +18,12 @@ Imports:
     httr,
     tibble,
     jsonlite,
-    rlang
+    rlang,
+    xml2,
+    rvest,
+    dplyr,
+    purrr,
+    stringr,
+    lubridate
+Depends: 
+    R (>= 2.10)

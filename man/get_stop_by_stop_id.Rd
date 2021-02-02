@@ -17,4 +17,5 @@ Query stop by stop id
 }
 \examples{
 get_stop_by_stop_id(stop_id = "1369-20201221160823_v95.106")
+# get stop by stop_id
 }
