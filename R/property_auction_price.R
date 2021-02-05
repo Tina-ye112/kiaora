@@ -18,8 +18,8 @@ get_one_page <- function(url) {
   ))
   df <- mutate(
     df,
-    region = sub(",.*","",region),
-    district = sub(".*, ","",district),
+    region = na_if(sub(",.*","",region),"-"),
+    district = na_if(sub(".*, ","",district),"-"),
     auction_price = as.numeric(gsub("[^[:digit:]]", "", auction_price)),
     auction_dates = dmy(auction_dates),
     bedrooms = as.numeric(bedrooms),
