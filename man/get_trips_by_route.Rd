@@ -16,6 +16,8 @@ A tibble
 Query trips by route id
 }
 \examples{
+\dontrun{
 get_trips_by_route(route_id = "840007-20201221160823_v95.106")
+}
 # get trips by route
 }

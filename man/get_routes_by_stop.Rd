@@ -16,6 +16,8 @@ A tibble
 Query routes by stop id
 }
 \examples{
+\dontrun{
 get_routes_by_stop(stop_id = "1369-20201221160823_v95.106")
+}
 # get routes by stop
 }

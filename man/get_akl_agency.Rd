@@ -13,5 +13,7 @@ A tibble
 Query Auckland bus agency
 }
 \examples{
+\dontrun{
 get_akl_agency()
+}
 }

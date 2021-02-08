@@ -1,6 +1,6 @@
 # get_one_page function
 get_one_page <- function(url) {
-  auction_price <- auction_dates <- bedrooms <- bathrooms<-
+  region <- district <- auction_price <- auction_dates <- bedrooms <- bathrooms<-
   car_parking <- rating_value <- rating_dates <- NULL
   page <- read_html(url)
   enclosing_nodes <- html_nodes(page, ".padb-property-card")
@@ -48,7 +48,9 @@ get_rating_value <- function(rating_value) {
 #' @return A tibble
 #' @export
 #' @examples
+#' \dontrun{
 #' get_property_auction_price(region = "Northland", district = , area = )
+#' }
 #' # get_property_auction_price function
 get_property_auction_price <- function(region = NULL, district = NULL, area = NULL) {
   num <- 1:ceiling(get_number_of_results(region = region) / 25)

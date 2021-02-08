@@ -16,6 +16,8 @@ A tibble
 Query routes by long name
 }
 \examples{
+\dontrun{
 get_routes_by_long_name(route_long_name = "Mangere Town Centre To Otahuhu Station Via Tidal Road")
+}
 # get routes by long name
 }

@@ -16,6 +16,8 @@ A tibble
 Query stop by trip id
 }
 \examples{
+\dontrun{
 get_stop_by_trip_id(trip_id = "51100221657-20201221160823_v95.106")
+}
 # get stop by trip_id
 }

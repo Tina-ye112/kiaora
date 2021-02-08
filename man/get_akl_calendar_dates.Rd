@@ -13,5 +13,7 @@ A tibble
 Query calendar dates
 }
 \examples{
+\dontrun{
 get_akl_calendar_dates()
+}
 }

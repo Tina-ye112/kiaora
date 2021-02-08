@@ -13,5 +13,7 @@ A tibble
 Query Auckland stops
 }
 \examples{
+\dontrun{
 get_akl_stops()
+}
 }

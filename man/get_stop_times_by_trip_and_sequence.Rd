@@ -18,9 +18,11 @@ A tibble
 Query stop times by trip id and sequence
 }
 \examples{
+\dontrun{
 get_stop_times_by_trip_and_sequence(
   trip_id = "465203730-20201221160823_v95.106",
   stop_sequence = "1"
 )
+}
 # get stop times by trip and sequence
 }

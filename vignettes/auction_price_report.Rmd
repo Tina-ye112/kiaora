@@ -1,0 +1,20 @@
+---
+title: "Auction Price Report"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Auction Price Report}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(kiaora)
+get_property_auction_price(region = "Northland",district = NULL,area = NULL)
+```

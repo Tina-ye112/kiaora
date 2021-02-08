@@ -16,6 +16,8 @@ A tibble
 Query stop by stop code
 }
 \examples{
+\dontrun{
 get_stop_by_stop_code(stop_code = "97")
+}
 # get stop by stop_code
 }

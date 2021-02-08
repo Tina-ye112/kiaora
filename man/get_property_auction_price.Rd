@@ -20,6 +20,8 @@ A tibble
 Query auction price and other information for NZ property
 }
 \examples{
+\dontrun{
 get_property_auction_price(region = "Northland", district = , area = )
+}
 # get_property_auction_price function
 }

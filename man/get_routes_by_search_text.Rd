@@ -16,6 +16,8 @@ A tibble
 Query routes by search text
 }
 \examples{
+\dontrun{
 get_routes_by_search_text(search_text = "Albany")
+}
 # get routes by search_text
 }

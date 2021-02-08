@@ -21,10 +21,12 @@ Query routes by latitude of the position,
 longitude of the position,and search radius
 }
 \examples{
+\dontrun{
 get_routes_by_location(
   lat = "-37.06429",
   lng = "174.94611",
   distance = "10"
 )
+}
 # get routes by location
 }

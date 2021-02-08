@@ -13,5 +13,7 @@ A tibble
 Query Auckland trips
 }
 \examples{
+\dontrun{
 get_akl_trips()
+}
 }

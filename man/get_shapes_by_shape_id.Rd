@@ -16,6 +16,8 @@ A tibble
 Query shapes by shape id
 }
 \examples{
+\dontrun{
 get_shapes_by_shape_id(shape_id = "1192-20201221160823_v95.106")
+}
 # get shapes by shape_id
 }
