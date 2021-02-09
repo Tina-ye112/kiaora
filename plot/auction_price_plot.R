@@ -8,11 +8,10 @@ library(lubridate)
 
 add_month <- nzhousingprice
 add_month <- mutate(add_month, auction_dates = as.yearmon(auction_dates))
-add_month$auction_price[add_month$auction_price == 12017200001202] <- 720000
-add_month$auction_price[add_month$auction_price == 240000270000] <- 255000
-add_month$auction_price[add_month$auction_price == 2957] <- 2900000
-add_month$auction_price[add_month$auction_price == 678391] <- 6780000
-
+add_month <- mutate(add_month,auction_price =replace(auction_price,auction_price== 12017200001202 , 720000),
+                              auction_price = replace(auction_price,auction_price== 240000270000 ,255000),
+                              auction_price = replace(auction_price,auction_price== 2957, 2900000),
+                              auction_price = replace(auction_price,auction_price==678391 ,6780000))
 # map for auction property
 register_google(key = "")
 filter(add_month, region %in% c("Auckland"), auction_price >= 5000000) %>%
