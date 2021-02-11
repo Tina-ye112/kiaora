@@ -1,7 +1,8 @@
 ## code to prepare `DATASET` dataset goes here
+library(tidyverse)
 nzhousingprice <- get_property_auction_price(region = , district = , area = )
 
-nzhousingprice_clear <- filter(nzhousingprice, year(auction_dates) > 2017, bedrooms <= 13 | is.na(bedrooms), bathrooms <= 10 | is.na(bathrooms)) %>%
+nzhousingprice <- filter(nzhousingprice, year(auction_dates) > 2017, bedrooms <= 13 | is.na(bedrooms), bathrooms <= 10 | is.na(bathrooms)) %>%
   mutate(
     region = replace(region, property_address == "Woolston, 46 Mackenzie Avenue ST7730", "Canterbury"),
     region = replace(region, property_address == "Fendalton, 39B Kotare Street PI65339", "Canterbury"),
@@ -32,6 +33,7 @@ geocoded_nz <- mutate(nzhousingprice_geocoded,
   lat = replace(lat, lat > 0, NA)
 ) %>%
   select(property_address, lon, lat)
+nzpropertygeo <- geocoded_nz
 
 usethis::use_data(nzhousingprice, overwrite = TRUE)
-usethis::use_data(geocoded_nz)
+usethis::use_data(nzpropertygeo, overwrite = TRUE)

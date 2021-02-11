@@ -1,16 +1,37 @@
-#install.packages("leaflet")
-#install.packages("zoo")
-#install.packages("ggridges")
+# install.packages("leaflet")
+# install.packages("zoo")
+# install.packages("ggridges")
+# devtools::install_github("phildonovan/nzcensr")
 library(ggmap)
 library(leaflet)
-library(zoo)
 library(stringr)
 library(lubridate)
 library(ggridges)
+library(kiaora)
+library(tidyverse)
+# library(nzcensr)
+# library(sf)
+#
+# nz_simple <- st_simplify(regions, dTolerance = 1000) %>%
+#   st_transform(crs = 2193)
+#
+# nzmap <- nzpropertygeo %>%
+#   filter(lon > 160) %>%
+#   st_as_sf(coords = c("lon", "lat"), crs = 2193)
+#
+# st_join(nz_simple, nzmap)
+# ggplot() +
+#   # geom_sf(data = nz_simple) +
+#   geom_sf(data = nzmap)
+#   # geom_point(aes(lon, lat), size = 0.3) +
+#   geom_density2d()
 
+nzpropertygeo %>%
+  filter(lon > 160) %>%
+  ggplot(aes(lon, lat)) +
+  geom_point(size = 0.5) +
+  geom_density2d()
 
-
-add_month <- mutate(nzhousingprice_clear, auction_dates = as.yearmon(auction_dates))
 # map for auction property
 register_google(key = "")
 filter(add_month, region %in% c("Auckland"), auction_price >= 5000000) %>%
@@ -33,84 +54,98 @@ geocoded %>%
   )
 
 # map for auction_price per region
-dataset <- add_month %>%
-  mutate(group = ifelse(region == "Auckland", "Auckland", "Others")) %>%
-  group_by(auction_dates, group)
-dataset_auction_price <- summarise(dataset, med = median(auction_price, na.rm = TRUE))
-ggplot(dataset_auction_price, aes(auction_dates, med)) +
-  geom_line(aes(color = group), size = 1) +
-  geom_point(aes(color = factor(group))) +
+dataset <- nzhousingprice %>%
+  mutate(
+    group = ifelse(region == "Auckland", region, "Others"),
+    auction_yrmth = zoo::as.yearmon(auction_dates)
+  )
+dataset_auction_price <- dataset %>%
+  group_by(auction_yrmth, group) %>%
+  summarise(med = median(auction_price, na.rm = TRUE))
+
+dataset %>%
+  ggplot(aes(auction_yrmth, auction_price)) +
+  geom_boxplot(aes(group = auction_yrmth)) +
+  facet_wrap(~ group, ncol = 1) +
   scale_color_manual(values = c("#0073C2FF", "#EFC000FF"))
 
 # plot for counts per region
-dataset_count <- summarise(dataset, counts = n())
-ggplot(dataset_count, aes(auction_dates, counts)) +
+dataset_count <- dataset %>%
+  group_by(auction_yrmth, group) %>%
+  summarise(counts = n())
+ggplot(dataset_count, aes(auction_yrmth, counts)) +
   geom_line(aes(color = group), size = 1) +
   geom_point(aes(color = factor(group))) +
   scale_color_manual(values = c("#0073C2FF", "#EFC000FF"))
 
 # plot for counts of per year over months
-dataset_month <- mutate(dataset, month = month(auction_dates), year = year(auction_dates)) %>%
+dataset_month <- dataset %>%
+  mutate(
+    month = month(auction_dates, label = TRUE),
+    year = as.factor(year(auction_dates))) %>%
   group_by(month, year) %>%
   summarise(counts = n())
-ggplot(dataset_month, aes(factor(month), counts, group = factor(year))) +
-  geom_line(aes(color = factor(year)), size = 1) +
-  geom_point(aes(color = factor(year))) +
+ggplot(dataset_month, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
   labs(x = "Month", colour = "Year") +
   theme(legend.position = "top") +
   scale_color_manual(values = c("#ffd080", "#ff6666", "#cc6600", "#660000"))
 
 # plot for counts Auckland vs Others  over months
-dataset_group <- mutate(dataset, month = month(auction_dates), year = year(auction_dates)) %>%
+dataset_group <- dataset %>%
+  mutate(month = month(auction_dates, label = TRUE),
+         year = as.factor(year(auction_dates))) %>%
   group_by(month, year, group) %>%
   summarise(counts = n())
-ggplot(dataset_group, aes(factor(month), counts, group = factor(year))) +
-  geom_line(aes(color = factor(year)), size = 1) +
-  geom_point(aes(color = factor(year))) +
+ggplot(dataset_group, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
   labs(x = "Month", colour = "Year") +
   theme(legend.position = "top") +
   scale_color_manual(values = c("#ffd080", "#ff6666", "#cc6600", "#660000")) +
-  facet_wrap(~group)
+  facet_wrap(~ group, scales = "free_y", ncol = 1)
 
 # plot for counts per day
-dataset_day <- mutate(nzhousingprice_clear, year = year(auction_dates), day = factor(weekdays(auction_dates),
-  levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-)) %>%
-  group_by(day) %>%
+dataset_day <- dataset %>%
+  mutate(
+  year = year(auction_dates),
+  day = wday(auction_dates, label = TRUE, week_start = 1)
+) %>%
+  group_by(day, group) %>%
   summarise(counts = n())
 ggplot(dataset_day, aes(day, counts)) +
-  geom_bar(aes(color = day, fill = day),
-    stat = "identity", position = position_dodge(0.8),
-    width = 0.7
-  )
-
-
+  geom_col(aes(fill = group), position = position_dodge(1))
 
 # heatmap
-group_by(add_month, bedrooms, bathrooms) %>%
+group_by(dataset, bedrooms, bathrooms) %>%
   summarise(counts = n()) %>%
   ggplot(aes(factor(bedrooms), factor(bathrooms))) +
-  geom_tile(aes(fill = counts)) +
+  geom_tile(aes(fill = counts), colour = "white") +
+  geom_text(aes(label = counts), colour = "white") +
+  scale_fill_viridis_c(breaks = seq(0, 4000, by = 500)) +
   labs(x = "Bedrooms", y = "Bathrooms")
 
 # box plot
-
-ggplot(dataset, aes(factor(group), auction_price)) +
+ggplot(dataset, aes(group, auction_price)) +
   geom_boxplot()
 
 # Auckland district density plot
-dataset_auckland <- filter(nzhousingprice_clear, !is.na(auction_price), year(auction_dates) == 2020, region == "Auckland")
+dataset_auckland <- dataset %>%
+  mutate(year = year(auction_dates)) %>%
+  filter(region == "Auckland")
 ggplot(dataset_auckland, aes(auction_price, district, fill = district)) +
   geom_density_ridges() +
-  theme_ridges()
+  theme_ridges() +
+  xlim(c(0, 6e+06))
 
 # Auckland district line plot
-dataset_auckland_price <- filter(add_month, region == "Auckland") %>%
-  group_by(district, auction_dates) %>%
+dataset_auckland_price <- dataset_auckland %>%
+  filter(auction_price < 9e+06) %>%
+  group_by(district, year) %>%
   summarise(med = median(auction_price, na.rm = TRUE))
-ggplot(dataset_auckland_price, aes(auction_dates, med, group = district)) +
+ggplot(dataset_auckland_price, aes(year, med, group = district)) +
   geom_line(aes(color = district), size = 1) +
   geom_point(aes(color = district)) +
   labs(x = "Auction Dates", colour = "District") +
-  theme(legend.position = "top") +
-  facet_wrap(~district)
+  theme(legend.position = "top")
