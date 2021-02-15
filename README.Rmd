@@ -38,31 +38,43 @@ devtools::install_github("Tina-ye112/kiaora")
 ```
 ## Usage
 
-This function contains 3 parameters that are region, district, area.You could ...
+This function contains 3 parameters that are region, district, area.You could input
+the region for the place that you are interested in, and the function would return 
+a tibble with auction property price and other basic information. Or leave the parameters to be NULL, the function would return all auction results by default.
+
+Here is an example for auction results of Northland region.
 
 ```{r}
 library(kiaora)
+library(dplyr)
+library(stringr)
+library(lubridate)
 ```
 
 
-```{r, eval=FALSE}
+```{r}
 get_property_auction_price(region = "Northland",district = NULL,area = NULL)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r}
-summary(nzhousingprice)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
+Here is the line graph  illustrates the number of auction properties sold for New Zealand over months from 2018 to early in 2021.
 ```{r}
 library(ggplot2)
-ggplot(data=subset(nzhousingprice,region=="Auckland"&district=="North Shore City"))+
-  geom_line(aes(x=auction_dates,y=auction_price))
+dataset <- nzhousingprice %>%
+  mutate(
+    group = ifelse(region == "Auckland", region, "Others"),
+    auction_yrmth = zoo::as.yearmon(auction_dates)
+  )
+dataset_month <- dataset %>%
+  mutate(
+    month = month(auction_dates, label = TRUE),
+    year = as.factor(year(auction_dates))) %>%
+  group_by(month, year) %>%
+  summarise(counts = n())
+ggplot(dataset_month, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(x = "Month", colour = "Year") +
+  theme(legend.position = "top") 
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+

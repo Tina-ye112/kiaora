@@ -30,59 +30,74 @@ devtools::install_github("Tina-ye112/kiaora")
 ## Usage
 
 This function contains 3 parameters that are region, district, area.You
-could …
+could input the region for the place that you are interested in, and the
+function would return a tibble with auction property price and other
+basic information. Or leave the parameters to be NULL, the function
+would return all auction results by default.
+
+Here is an example for auction results of Northland region.
 
 ``` r
 library(kiaora)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+library(stringr)
+library(lubridate)
+#> 
+#> Attaching package: 'lubridate'
+#> The following objects are masked from 'package:base':
+#> 
+#>     date, intersect, setdiff, union
 ```
 
 ``` r
 get_property_auction_price(region = "Northland",district = NULL,area = NULL)
+#> # A tibble: 133 x 10
+#>    region district property_address auction_price auction_dates bedrooms
+#>    <chr>  <chr>    <chr>                    <dbl> <date>           <dbl>
+#>  1 North… Kaipara  73 Old Waipu Ro…       2250000 2021-02-11           4
+#>  2 North… Far Nor… 80 Rangitane Lo…        676000 2021-02-04           3
+#>  3 North… Kaipara  30 Lincoln Stre…       1210000 2021-02-03           3
+#>  4 North… Kaipara  31 Moir Street,…        680000 2021-01-28           2
+#>  5 North… Far Nor… 120 Ota Point R…        520000 2021-01-21           4
+#>  6 North… Far Nor… 21 Kemp Road, K…        990000 2021-01-21           3
+#>  7 North… Kaipara  1 Lincoln Stree…       2600000 2020-12-17           5
+#>  8 North… Whangar… 5/26 Percy Stre…        487500 2020-12-16           2
+#>  9 North… Far Nor… 40 Hall Road, K…       1096000 2020-12-10           3
+#> 10 North… Whangar… 39 Percy Street…        570000 2020-12-09           3
+#> # … with 123 more rows, and 4 more variables: bathrooms <dbl>,
+#> #   car_parking <dbl>, rating_value <dbl>, rating_dates <date>
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(nzhousingprice)
-#>     region            district         property_address   auction_price      
-#>  Length:15770       Length:15770       Length:15770       Min.   :1.300e+01  
-#>  Class :character   Class :character   Class :character   1st Qu.:6.900e+05  
-#>  Mode  :character   Mode  :character   Mode  :character   Median :9.350e+05  
-#>                                                           Mean   :8.500e+08  
-#>                                                           3rd Qu.:1.305e+06  
-#>                                                           Max.   :1.202e+13  
-#>                                                           NA's   :1332       
-#>  auction_dates           bedrooms        bathrooms        car_parking    
-#>  Min.   :2016-07-01   Min.   : 1.000   Min.   :  1.000   Min.   : 1.000  
-#>  1st Qu.:2018-11-15   1st Qu.: 3.000   1st Qu.:  1.000   1st Qu.: 1.000  
-#>  Median :2019-11-14   Median : 3.000   Median :  2.000   Median : 2.000  
-#>  Mean   :2019-10-05   Mean   : 3.384   Mean   :  1.745   Mean   : 1.787  
-#>  3rd Qu.:2020-09-03   3rd Qu.: 4.000   3rd Qu.:  2.000   3rd Qu.: 2.000  
-#>  Max.   :2021-02-02   Max.   :65.000   Max.   :150.000   Max.   :33.000  
-#>                       NA's   :238      NA's   :205       NA's   :2058    
-#>   rating_value       rating_dates       
-#>  Min.   :    3000   Min.   :2015-07-01  
-#>  1st Qu.:  650000   1st Qu.:2017-07-01  
-#>  Median :  885000   Median :2017-07-01  
-#>  Mean   :  995096   Mean   :2017-08-22  
-#>  3rd Qu.: 1200000   3rd Qu.:2017-07-01  
-#>  Max.   :11000000   Max.   :2020-09-01  
-#>  NA's   :3490       NA's   :3685
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
-
-You can also embed plots, for example:
+Here is the line graph illustrates the number of auction properties sold
+for New Zealand over months from 2018 to early in 2021.
 
 ``` r
 library(ggplot2)
-ggplot(data=subset(nzhousingprice,region=="Auckland"&district=="North Shore City"))+
-  geom_line(aes(x=auction_dates,y=auction_price))
+dataset <- nzhousingprice %>%
+  mutate(
+    group = ifelse(region == "Auckland", region, "Others"),
+    auction_yrmth = zoo::as.yearmon(auction_dates)
+  )
+dataset_month <- dataset %>%
+  mutate(
+    month = month(auction_dates, label = TRUE),
+    year = as.factor(year(auction_dates))) %>%
+  group_by(month, year) %>%
+  summarise(counts = n())
+#> `summarise()` has grouped output by 'month'. You can override using the `.groups` argument.
+ggplot(dataset_month, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(x = "Month", colour = "Year") +
+  theme(legend.position = "top") 
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
