@@ -11,10 +11,119 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-)
+  )
+knitr::opts_chunk$set(fig.width=7, fig.height=3)
 ```
+# Introduction
+This document is an analysis for residential auction results in NZ from 2018 to 
+early in 2021. The data are scarped from interest.co.nz website. We are mainly 
+interested in the change in the number of auction property sold with months for 
+each year, how the auction price changed with years for each district in
+Auckland and several problems.
 
 ```{r setup}
 library(kiaora)
-get_property_auction_price(region = "Northland",district = NULL,area = NULL)
+library(stringr)
+library(lubridate)
+library(ggridges)
+library(tidyverse)
 ```
+
+```{r}
+dataset <- nzhousingprice %>%
+  mutate(
+    group = ifelse(region == "Auckland", region, "Others"),
+    auction_yrmth = zoo::as.yearmon(auction_dates)
+  )
+dataset_month <- dataset %>%
+  mutate(
+    month = month(auction_dates, label = TRUE),
+    year = as.factor(year(auction_dates))) %>%
+  group_by(month, year) %>%
+  summarise(counts = n())
+ggplot(dataset_month, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(x = "Month", colour = "Year") +
+  theme(legend.position = "top") +
+  scale_color_manual(values = c("#ffd080", "#ff6666", "#cc6600", "#660000"))
+  
+```
+The line graph above illustrates the number of auction properties sold for New 
+Zealand over months from 2018 to early in 2021.
+
+It can be seen form the line graph that the sales trends for 2018 and 2019 are similar. Initially, the figure reached its lowest point in Jan. Then the figure 
+experienced an upward trend over next two months. After that , the figure droped slightly and keeped relatively stable. Afterwards, the figure reached the peak 
+around 600 in Oct and Nov respectively. Finally, we can see a decline over last 
+month.
+
+On the other hand, the sales for 2020 saw a different trend. It is particularly
+noticeable that there was a dramatic decline from Mar to Apr and reached the 
+lowest point around 0 due to lockdown for Covid-19. The next seven months saw a 
+sharp rise , with the number of auction property sold reaching around 1170 in Nov. 
+At last,a slight decline occured as well.
+
+```{r}
+dataset_group <- dataset %>%
+  mutate(month = month(auction_dates, label = TRUE),
+         year = as.factor(year(auction_dates))) %>%
+  group_by(month, year, group) %>%
+  summarise(counts = n())
+ggplot(dataset_group, aes(month, counts, group = year, colour = year)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(x = "Month", colour = "Year") +
+  theme(legend.position = "top") +
+  scale_color_manual(values = c("#ffd080", "#ff6666", "#cc6600", "#660000")) +
+  facet_wrap(~ group, scales = "free_y", ncol = 1)
+```
+So from this graph it does look like that great change in the number of auction property sold for 2020 mainly occurred in Auckland region. The figure in Nov for 
+2020 in Auckland is about 500 more than that for 2019.
+
+```{r}
+dataset_day <- dataset %>%
+  mutate(
+  year = year(auction_dates),
+  day = wday(auction_dates, label = TRUE, week_start = 1)
+) %>%
+  group_by(day, group) %>%
+  summarise(counts = n())
+ggplot(dataset_day, aes(day, counts)) +
+  geom_col(aes(fill = group), position = position_dodge(1))
+
+```
+The bar chart above shows that the number of auction property sold for Auckland 
+region and other regions from Monday to Sunday between 2018 and early in 2021.
+
+It is clear that for Auckland region the figure for Tuesday, Wednesday and Thursday was significantly  higher than other days. Especially Thursday, on which most 
+auction properties were sold. By contrast, the figure for Monday was only around 
+250.
+
+Compared to Auckland region, apart from Wednesday and Thursday, the volume was low 
+on the rest days for other regions.
+
+We also can see from this bar chart that overall, the number of auction property sold for Auckland region was higher than that for other regions.
+
+```{r}
+dataset_auckland <- dataset %>%
+  mutate(year = year(auction_dates)) %>%
+  filter(region == "Auckland")
+dataset_auckland_price <- dataset_auckland %>%
+  filter(auction_price < 9e+06) %>%
+  group_by(district, year) %>%
+  summarise(med = median(auction_price, na.rm = TRUE))
+ggplot(dataset_auckland_price, aes(year, med, group = district)) +
+  geom_line(aes(color = district), size = 1) +
+  geom_point(aes(color = district)) +
+  labs(x = "Auction Dates", colour = "District") +
+  theme(legend.position = "top")
+
+```
+We can see that the median auction property price saw a fast growth for most districts in Auckland from 2018 to 2021.
+
+However, auction price growth varied widely in different districts.
+
+With the period, the median price for North Shore City grew from about $1,090,000
+to $1,400,000, which is the fastest in Auckland. Manukau City ranks second, which
+grew from around $900,000 to $1,180,000. The slowest district is Franklin,which
+only grew by 3.5%, from about $850,000 to $880,000.
