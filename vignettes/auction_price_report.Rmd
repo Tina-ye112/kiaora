@@ -14,19 +14,22 @@ knitr::opts_chunk$set(
   )
 knitr::opts_chunk$set(fig.width=7, fig.height=3)
 ```
+
 # Introduction
+
 This document is an analysis for residential auction results in NZ from 2018 to 
-early in 2021. The data are scarped from interest.co.nz website. We are mainly 
+early in 2021. The data are scraped from [interest.co.nz](https://www.interest.co.nz) website. We are mainly 
 interested in the change in the number of auction property sold with months for 
 each year, how the auction price changed with years for each district in
 Auckland and several problems.
 
-```{r setup}
+```{r setup, message=FALSE}
 library(kiaora)
 library(stringr)
 library(lubridate)
 library(ggridges)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -53,7 +56,7 @@ The line graph above illustrates the number of auction properties sold for New
 Zealand over months from 2018 to early in 2021.
 
 It can be seen form the line graph that the sales trends for 2018 and 2019 are similar. Initially, the figure reached its lowest point in Jan. Then the figure 
-experienced an upward trend over next two months. After that , the figure droped slightly and keeped relatively stable. Afterwards, the figure reached the peak 
+experienced an upward trend over next two months. After that , the figure dropped slightly and kept relatively stable. Afterwards, the figure reached the peak 
 around 600 in Oct and Nov respectively. Finally, we can see a decline over last 
 month.
 
@@ -61,7 +64,7 @@ On the other hand, the sales for 2020 saw a different trend. It is particularly
 noticeable that there was a dramatic decline from Mar to Apr and reached the 
 lowest point around 0 due to lockdown for Covid-19. The next seven months saw a 
 sharp rise , with the number of auction property sold reaching around 1170 in Nov. 
-At last,a slight decline occured as well.
+At last,a slight decline occurred as well.
 
 ```{r}
 dataset_group <- dataset %>%

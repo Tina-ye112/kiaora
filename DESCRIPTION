@@ -29,5 +29,8 @@ Depends:
     R (>= 2.10)
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggridges,
+    ggplot2,
+    zoo
 VignetteBuilder: knitr
