@@ -33,6 +33,19 @@ library(ggplot2)
 ```
 
 ```{r}
+nzpropertygeo %>%
+  filter(lon > 160) %>%
+  ggplot(aes(lon, lat)) +
+  geom_point(size = 0.5) +
+  geom_density2d()
+
+```
+
+This is a map which describes the locations of the auction property sold. It is 
+very obvious that most properties sold in Auckland region, followed by Canterbury 
+and Bay of Plenty region.
+
+```{r}
 dataset <- nzhousingprice %>%
   mutate(
     group = ifelse(region == "Auckland", region, "Others"),
@@ -66,7 +79,7 @@ lowest point around 0 due to lockdown for Covid-19. The next seven months saw a
 sharp rise , with the number of auction property sold reaching around 1170 in Nov. 
 At last,a slight decline occurred as well.
 
-```{r}
+```{r fig.height=5,fig.width=7}
 dataset_group <- dataset %>%
   mutate(month = month(auction_dates, label = TRUE),
          year = as.factor(year(auction_dates))) %>%
@@ -111,22 +124,34 @@ We also can see from this bar chart that overall, the number of auction property
 dataset_auckland <- dataset %>%
   mutate(year = year(auction_dates)) %>%
   filter(region == "Auckland")
-dataset_auckland_price <- dataset_auckland %>%
-  filter(auction_price < 9e+06) %>%
-  group_by(district, year) %>%
-  summarise(med = median(auction_price, na.rm = TRUE))
-ggplot(dataset_auckland_price, aes(year, med, group = district)) +
-  geom_line(aes(color = district), size = 1) +
-  geom_point(aes(color = district)) +
-  labs(x = "Auction Dates", colour = "District") +
-  theme(legend.position = "top")
+ggplot(dataset_auckland, aes(auction_price, district, fill = district)) +
+  geom_density_ridges() +
+  theme_ridges() +
+  xlim(c(0, 6e+06))
 
 ```
-We can see that the median auction property price saw a fast growth for most districts in Auckland from 2018 to 2021.
 
-However, auction price growth varied widely in different districts.
+This density plot is a representation of distribution for auction price of each 
+district in Auckland region.
 
-With the period, the median price for North Shore City grew from about $1,090,000
-to $1,400,000, which is the fastest in Auckland. Manukau City ranks second, which
-grew from around $900,000 to $1,180,000. The slowest district is Franklin,which
-only grew by 3.5%, from about $850,000 to $880,000.
+There is a fluctuation for auction price in Waiheke Island due to small sales.
+We can see that most auction price for each district is under $2,000,000. And 
+districts like Waitakere City, Papakura and Franklin are with narrow interval
+for auction price, which means that there is less variability of auction price 
+for these districts. On the other hand, except large variance of auction price 
+for Auckland City, auction price for quite a few properties is over $2,000,000.
+
+```{r}
+group_by(dataset, bedrooms, bathrooms) %>%
+  summarise(counts = n()) %>%
+  ggplot(aes(factor(bedrooms), factor(bathrooms))) +
+  geom_tile(aes(fill = counts), colour = "white") +
+  geom_text(aes(label = counts), colour = "white") +
+  scale_fill_viridis_c(breaks = seq(0, 4000, by = 500)) +
+  labs(x = "Bedrooms", y = "Bathrooms")
+```
+From this graph, we con conclude that properties with 3 bedrooms and 1 bathroom
+are most popular. The number of this kind of property sold is 4023. Property with
+4 bedrooms and 2 bathrooms ranks second with sales 3028. Property with 3 bedrooms, 
+2 bathrooms and property with 2 bedrooms and 1 bathroom come next in third and 
+fourth position.
