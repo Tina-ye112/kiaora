@@ -24,10 +24,13 @@ nzhousingprice <- filter(nzhousingprice, year(auction_dates) > 2017, bedrooms <=
     auction_price = replace(auction_price, auction_price == 678391, NA)
   )
 
-nzhousingprice_geocoded <- mutate(nzhousingprice_clear,
-  property_address = str_c(property_address, district, region, " New Zealand", sep = ",")
+library(ggmap)
+nzhousingprice_geocoded <- mutate(nzhousingprice,
+  property_address2 = str_c(property_address, district, region, "New Zealand",
+                            sep = ", ")
 ) %>%
-  mutate_geocode(property_address)
+  mutate_geocode(property_address2) %>%
+  select(-property_address2)
 geocoded_nz <- mutate(nzhousingprice_geocoded,
   lon = replace(lon, lon < 0, NA),
   lat = replace(lat, lat > 0, NA)
